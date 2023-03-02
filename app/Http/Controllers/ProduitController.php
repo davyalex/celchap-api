@@ -151,8 +151,9 @@ class ProduitController extends Controller
                     ->toMediaCollection('image');
             }
         }
-
+      
         if ($request['grossiste']) {
+            Grossiste::where('produit_id',$request['id'])->delete();
             foreach ($request['grossiste'] as $value) {
                 Grossiste::create([
                     'produit_id' => $produit['id'],
@@ -161,6 +162,11 @@ class ProduitController extends Controller
                 ]);
             }
         }
+
+        $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
+        ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+        ->whereId($produit['id'])
+        ->get();
 
         return response()->json([
             'message' => 'Produit modifié avec success',

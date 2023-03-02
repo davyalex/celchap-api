@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('boutique_commande', function (Blueprint $table) {
             $table->id();
-            $table->integer('montant_total')->nullable();
-           
+            $table->integer('quantite')->nullable();
+            $table->double('prix_vendeur')->nullable();
+            $table->double('montant_ajouter')->nullable();
+            $table->double('prix_afficher')->nullable();
+            $table->double('total')->nullable(); //prix_afficher * quantite           
 
             $table->foreignId('commande_id')
             ->nullable()

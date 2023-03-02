@@ -76,20 +76,41 @@ class UserController extends Controller
             ], 401);
         } else {
             $user = User::with(['roles', 'media'])->wherePhone($request['phone'])->first();
-           $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-           return response()->json([
-            'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'message' => 'Operation réussi',
-        ], 200);
+            return response()->json([
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'message' => 'Operation réussi',
+            ], 200);
         }
     }
 
-    public function logout(Request $request){
+
+    public function auth()
+    {
+        $auth = User::with([
+            'commandes',
+            'boutiques' => function ($q) {
+                $q->with(['categorie','commandes'])
+                ->whereId(Auth::user()->boutique_id);
+            }
+        ])
+            ->whereId(Auth::user()->id)
+            ->get();
+
+            return response()->json([
+                'auth'=>$auth
+            ]);
+    }
+
+
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Operation réussi',
-        ], 200);        }
+        ], 200);
+    }
 }

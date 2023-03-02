@@ -57,14 +57,19 @@ class Produit extends Model implements HasMedia
         return $this->belongsTo(Categorie::class, 'category_id');
     }
 
-   public function sous_category(): BelongsTo
+   public function sous_categorie(): BelongsTo
     {
-        return $this->belongsTo(SousCategory::class, 'sous_category_id');
+        return $this->belongsTo(SousCategorie::class, 'sous_category_id');
     }
 
     public function grossistes(): HasMany
     {
         return $this->hasMany(Grossiste::class);
+    }
+
+    public function avis(): HasMany
+    {
+        return $this->hasMany(Avis::class);
     }
 
   public function commandes(): BelongsToMany

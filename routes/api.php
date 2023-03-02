@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\BoutiqueController;
 use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\GrossisteController;
 use App\Http\Controllers\SousCategorieController;
 
 /*
@@ -24,9 +25,10 @@ use App\Http\Controllers\SousCategorieController;
 Route::controller(UserController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::get('auth', 'auth')->middleware('auth:sanctum');
+    Route::post('logout', 'logout')->middleware('auth:sanctum');
 });
 
-Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 
 
 
@@ -67,11 +69,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     });
 
-        /**GROSSISTE */
-        Route::controller(GrossisteController::class)->prefix('produit')->group(function () {
-            route::get('index', 'index');
-            route::post('store', 'store');
-            route::post('update', 'update');
-            route::post('destroy', 'destroy');    
-        });
+      
 });
