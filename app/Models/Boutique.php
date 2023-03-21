@@ -71,8 +71,8 @@ public function commande_produits(): HasMany
 
 public function commandes(): BelongsToMany
 {
-    return $this->belongsToMany(Boutique::class, 'boutique_commande', 'boutique_id','commande_id')
-    ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total')
+    return $this->belongsToMany(Commande::class, 'commande_produit', 'boutique_id','commande_id')
+    // ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total')
     ->withTimestamps();
 }
 

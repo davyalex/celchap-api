@@ -15,15 +15,15 @@ class UserController extends Controller
         $request->validate([
             'fullname' => 'required',
             'indicatif' => 'required',
-            'phone' => 'required|unique:users',
+            'phone' => 'required',
             'localisation' => '',
             'email' => 'unique:users',
             'password' => 'required',
         ]);
 
-        $code = Str::random(5);
-        $user = User::create([
-            'code' => $code,
+        // $code = Str::random(5);
+        $user = User::firstOrcreate([
+            // 'code' => $code,
             'fullname' => $request['fullname'],
             'indicatif' => $request['indicatif'],
             'phone' => $request['phone'],

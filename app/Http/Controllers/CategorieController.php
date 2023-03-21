@@ -30,7 +30,7 @@ class CategorieController extends Controller
         $request->validate([
             'name' => 'required',
         ]);
-$code = Str::random(5);
+        $code = Str::random(5);
         $categorie = Categorie::firstOrCreate([
             'code' => $code,
             'name' => $request->name,

@@ -16,9 +16,35 @@ class ProduitController extends Controller
 
     public function index()
     {
-        //
+        //request Query : name,prix,categorie;
+
+        $name = request('name');
+        $prix = request('prix');
+        $categorie = request('categorie');
+
+        $filter = request('filter');
+
+
+
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])->get();
+            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+            ->when($name,
+            fn($q)=>$q->whereName($name))
+
+            ->when($prix,
+            fn($q)=>$q->where('prix_vendeur',$prix))
+
+            ->when($categorie,
+            fn($q)=>$q->where('category_id',$categorie))
+
+            ->when($filter,
+            fn($q)=>$q
+            ->where('name','Like',"%{$filter}%")
+            ->orWhere('prix_vendeur', 'Like',"%{$filter}%")
+            ->where('boutique_id', Auth::user()->boutique_id)
+            )
+            
+            ->get();
         return response()->json(['produit' => $produit], 200);
     }
 
@@ -89,14 +115,25 @@ class ProduitController extends Controller
         }
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-        ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
-        ->whereId($produit['id'])
-        ->get();
+            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+            ->whereId($produit['id'])
+            ->get();
 
         return response()->json([
             'message' => 'Produit enregistré avec success',
             'produit' => $produit
         ], 200);
+    }
+
+
+    public function detail(Request $request){
+
+        //recuperer les detail d'un produit
+
+        $produit  = Produit::whereId($request['id'])
+        ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])->get();
+
+        return response()->json(['produit'=>$produit],200);
     }
 
 
@@ -144,16 +181,16 @@ class ProduitController extends Controller
             'boutique_id' => Auth::user()->boutique_id,
         ]);
 
-  
+
         if ($request->file('files')) {
             foreach ($request->file('files') as $image) {
                 $produit->addMedia($image)
                     ->toMediaCollection('image');
             }
         }
-      
+
         if ($request['grossiste']) {
-            Grossiste::where('produit_id',$request['id'])->delete();
+            Grossiste::where('produit_id', $request['id'])->delete();
             foreach ($request['grossiste'] as $value) {
                 Grossiste::create([
                     'produit_id' => $produit['id'],
@@ -164,9 +201,9 @@ class ProduitController extends Controller
         }
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-        ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
-        ->whereId($produit['id'])
-        ->get();
+            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+            ->whereId($produit['id'])
+            ->get();
 
         return response()->json([
             'message' => 'Produit modifié avec success',
@@ -179,7 +216,7 @@ class ProduitController extends Controller
     {
         //
         Produit::find($request->id)->delete();
-        Grossiste::where('produit_id',$request->id)->delete();
+        Grossiste::where('produit_id', $request->id)->delete();
         DB::table('media')->where('model_id', $request->id)->delete();
         return response()->json(['message' => 'produit supprimé'], 200);
     }

@@ -31,7 +31,7 @@ class Commande extends Model
 
     public function livraison(): BelongsTo
     {
-        return $this->belongsTo(Livraison::class, 'category_id');
+        return $this->belongsTo(Livraison::class, 'livraison_id');
     }
 
     public function user(): BelongsTo
@@ -42,7 +42,7 @@ class Commande extends Model
 
     public function produits(): BelongsToMany
     {
-        return $this->belongsToMany(Commande::class, 'commande_produit','produit_id', 'commande_id')
+        return $this->belongsToMany(Produit::class, 'commande_produit','commande_id', 'produit_id')
         ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total','boutique_id')
         ->withTimestamps();
     }
@@ -50,8 +50,8 @@ class Commande extends Model
 
     public function boutiques(): BelongsToMany
     {
-        return $this->belongsToMany(Boutique::class, 'boutique_commande', 'commande_id','boutique_id')
-        ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total')
+        return $this->belongsToMany(Boutique::class, 'commande_produit', 'commande_id','boutique_id')
+        // ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total')
         ->withTimestamps();
     }
 
