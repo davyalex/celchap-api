@@ -38,7 +38,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     /**CATEGORY PRINCIPALE */
     Route::controller(CategorieController::class)->prefix('categorie')->group(function () {
-        route::get('index', 'index');
+        // route::get('index', 'index');
         route::post('store', 'store');
         route::post('update', 'update');
         route::post('destroy', 'destroy');
@@ -89,4 +89,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(SiteController::class)->prefix('site')->group(function () {
         route::get('produit', 'produit');
     });
+
+
+
+
+    //api sans middleware
+
+    //liste des categories
+    Route::get('categorie/index',[CategorieController::class,'index']);
 });
