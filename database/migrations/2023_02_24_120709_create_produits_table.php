@@ -16,12 +16,13 @@ return new class extends Migration
             $table->string('code')->unique()->nullable();
             $table->string('slug')->nullable();
             $table->string('name')->nullable();
-            $table->double('prix_vendeur')->nullable();
-            $table->double('montant_ajouter')->nullable();
-            $table->double('prix_afficher')->nullable();
-            $table->double('prix_promo')->nullable();
-            $table->date('date_debut_promo')->nullable();
-            $table->date('date_fin_promo')->nullable();
+            $table->string('type')->nullable(); /** detail ou gros */
+            // $table->double('prix_vendeur')->nullable(); /** prix du vendeur */
+            // $table->double('montant_ajouter')->nullable(); /**prix ajouter par administrateur */
+            // $table->double('prix_afficher')->nullable(); /** montant ajouter + prix_vendeur */
+            // $table->double('prix_promo')->nullable();
+            // $table->date('date_debut_promo')->nullable();
+            // $table->date('date_fin_promo')->nullable();
             $table->string('disponibilite')->nullable(); 
             $table->string('description')->nullable();
             $table->softDeletes();

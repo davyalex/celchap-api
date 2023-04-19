@@ -35,9 +35,10 @@ class Produit extends Model implements HasMedia
         'code',
         'slug',
         'name',
-        'prix_vendeur',
-        'montant_ajouter',
-        'prix_afficher',
+        'type',
+        // 'prix_vendeur',
+        // 'montant_ajouter',
+        // 'prix_afficher',
         'prix_promo',
         'date_debut_promo',
         'date_fin_promo',
@@ -70,6 +71,11 @@ class Produit extends Model implements HasMedia
     public function avis(): HasMany
     {
         return $this->hasMany(Avis::class);
+    }
+
+    public function prices(): HasMany
+    {
+        return $this->hasMany(Price::class);
     }
 
   public function commandes(): BelongsToMany

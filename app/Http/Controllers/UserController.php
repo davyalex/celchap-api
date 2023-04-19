@@ -17,7 +17,7 @@ class UserController extends Controller
             'indicatif' => 'required',
             'phone' => 'required',
             'localisation' => '',
-            'email' => 'unique:users',
+            // 'email' => 'unique:users',
             'password' => 'required',
         ]);
 
@@ -27,7 +27,7 @@ class UserController extends Controller
             'fullname' => $request['fullname'],
             'indicatif' => $request['indicatif'],
             'phone' => $request['phone'],
-            'email' => $request['email'],
+            // 'email' => $request['email'],
             'localisation' => $request['localisation'],
             'password' => Hash::make($request['password']),
         ]);
@@ -40,7 +40,7 @@ class UserController extends Controller
                     ->toMediaCollection('image');
             }
             //assign-role
-            $user->assignRole('vendeur');
+            $user->assignRole($request['role']);
 
             //create-token
             $token = $user->createToken('auth_token')->plainTextToken;

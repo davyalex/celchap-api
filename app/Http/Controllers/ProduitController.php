@@ -2,6 +2,7 @@
 //produit de la boutique
 namespace App\Http\Controllers;
 
+use App\Models\Price;
 use App\Models\Produit;
 use App\Models\Grossiste;
 use Illuminate\Support\Str;
@@ -27,23 +28,30 @@ class ProduitController extends Controller
 
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
-            ->when($name,
-            fn($q)=>$q->whereName($name))
-
-            ->when($prix,
-            fn($q)=>$q->where('prix_vendeur',$prix))
-
-            ->when($categorie,
-            fn($q)=>$q->where('category_id',$categorie))
-
-            ->when($filter,
-            fn($q)=>$q
-            ->where('name','Like',"%{$filter}%")
-            ->orWhere('prix_vendeur', 'Like',"%{$filter}%")
-            ->where('boutique_id', Auth::user()->boutique_id)
+            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
+            ->when(
+                $name,
+                fn ($q) => $q->whereName($name)
             )
-            
+
+            ->when(
+                $prix,
+                fn ($q) => $q->where('prix_vendeur', $prix)
+            )
+
+            ->when(
+                $categorie,
+                fn ($q) => $q->where('category_id', $categorie)
+            )
+
+            ->when(
+                $filter,
+                fn ($q) => $q
+                    ->where('name', 'Like', "%{$filter}%")
+                    ->orWhere('prix_vendeur', 'Like', "%{$filter}%")
+                    ->where('boutique_id', Auth::user()->boutique_id)
+            )
+
             ->get();
         return response()->json(['produit' => $produit], 200);
     }
@@ -56,10 +64,10 @@ class ProduitController extends Controller
         //
         $request->validate([
             'name' => 'required',
-            'prix_vendeur' => 'required',
-            'prix_promo' => '',
-            'date_debut_promo' => '',
-            'date_fin_promo' => '',
+            // 'prix_vendeur' => 'required',
+            // 'prix_promo' => '',
+            // 'date_debut_promo' => '',
+            // 'date_fin_promo' => '',
             'disponibilite' => '',
             'description' => '',
             'sous_category' => '',
@@ -68,26 +76,10 @@ class ProduitController extends Controller
 
         $code = Str::random(5);
 
-        //intervalle montant a ajouter
-        $montant_ajouter = 0;
-        if ($request['prix_vendeur'] <= 5000) {
-            $montant_ajouter += 500;
-        } elseif ($request['prix_vendeur'] == 6000 || $request['prix_vendeur'] <= 15000) {
-            $montant_ajouter += 1500;
-        } else {
-            $montant_ajouter += 2000;
-        }
-
-        //prix_afficher
-        $prix_afficher = $request['prix_vendeur'] + $montant_ajouter;
-
         $produit = Produit::firstOrCreate([
             'code' => $code,
             'name' => $request['name'],
-            'prix_vendeur' => $request['prix_vendeur'],
-            'montant_ajouter' => $montant_ajouter,
-            'prix_afficher' =>  $prix_afficher,
-            'date_fin_promo' => $request['date_fin_promo'],
+            'type' => $request['type'],
             'disponibilite' => $request['disponibilite'],
             'description' => $request['description'],
             'category_id' => $request['category'],
@@ -103,19 +95,73 @@ class ProduitController extends Controller
                 }
             }
 
-            if ($request['grossiste']) {
-                foreach ($request['grossiste'] as $value) {
-                    Grossiste::create([
+            /**
+             * type: detail ou gros
+             */
+
+
+            //if type_produit ==detail
+            if ($request['type'] == 'detail') {
+
+                //intervalle montant a ajouter
+                $montant_ajouter = 0;
+                if ($request['prix_vendeur'] <= 5000) {
+                    $montant_ajouter += 500;
+                } elseif ($request['prix_vendeur'] == 6000 || $request['prix_vendeur'] <= 15000) {
+                    $montant_ajouter += 1500;
+                } else {
+                    $montant_ajouter += 2000;
+                }
+
+                //prix_afficher
+                $prix_afficher = $request['prix_vendeur'] + $montant_ajouter;
+
+                //add info in table
+                Price::create([
+                    'produit_id' => $produit['id'],
+                    'q_min' => 1,
+                    'q_max' => 1,
+                    'prix_vendeur' => $request['prix_vendeur'],
+                    'montant_ajouter' => $montant_ajouter,
+                    'prix_afficher' =>  $prix_afficher
+                ]);
+            }
+
+
+            //if type_produit ==gros
+            if ($request['type'] == 'gros') {
+                foreach ($request['gros'] as $value) {
+
+                    //intervalle montant a ajouter
+                    $montant_ajouter = 0;
+                    if ($value['prix_vendeur'] <= 5000) {
+                        $montant_ajouter += 500;
+                    } elseif ($value['prix_vendeur'] == 6000 || $value['prix_vendeur'] <= 15000) {
+                        $montant_ajouter += 1500;
+                    } else {
+                        $montant_ajouter += 2000;
+                    }
+
+                    //prix_afficher
+                    $prix_afficher = $value['prix_vendeur'] + $montant_ajouter;
+
+
+                    //add info in table
+
+                    Price::create([
                         'produit_id' => $produit['id'],
-                        'nombre' => $value['nombre'],
-                        'prix' => $value['prix']
+                        'q_min' => $value['q_min'],
+                        'q_max' => $value['q_max'],
+                        'prix_vendeur' => $value['prix_vendeur'],
+                        'montant_ajouter' => $montant_ajouter,
+                        'prix_afficher' =>  $prix_afficher
                     ]);
                 }
             }
         }
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
             ->whereId($produit['id'])
             ->get();
 
@@ -126,14 +172,15 @@ class ProduitController extends Controller
     }
 
 
-    public function detail(Request $request){
+    public function detail(Request $request)
+    {
 
         //recuperer les detail d'un produit
 
         $produit  = Produit::whereId($request['id'])
-        ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])->get();
+            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])->get();
 
-        return response()->json(['produit'=>$produit],200);
+        return response()->json(['produit' => $produit], 200);
     }
 
 
@@ -155,25 +202,11 @@ class ProduitController extends Controller
 
         ]);
 
-        //intervalle montant a ajouter
-        $montant_ajouter = 0;
-        if ($request['prix_vendeur'] <= 5000) {
-            $montant_ajouter += 500;
-        } elseif ($request['prix_vendeur'] == 6000 || $request['prix_vendeur'] <= 15000) {
-            $montant_ajouter += 1500;
-        } else {
-            $montant_ajouter += 2000;
-        }
 
-        //prix_afficher
-        $prix_afficher = $request['prix_vendeur'] + $montant_ajouter;
 
         $produit = tap(Produit::find($request->id))->update([
             'name' => $request['name'],
-            'prix_vendeur' => $request['prix_vendeur'],
-            'montant_ajouter' => $montant_ajouter,
-            'prix_afficher' =>  $prix_afficher,
-            'date_fin_promo' => $request['date_fin_promo'],
+            'type' => $request['type'],
             'disponibilite' => $request['disponibilite'],
             'description' => $request['description'],
             'category_id' => $request['category'],
@@ -189,19 +222,72 @@ class ProduitController extends Controller
             }
         }
 
-        if ($request['grossiste']) {
-            Grossiste::where('produit_id', $request['id'])->delete();
-            foreach ($request['grossiste'] as $value) {
-                Grossiste::create([
+        /**
+         * type: detail ou gros
+         */
+
+
+        //if type_produit ==detail
+        if ($request['type'] == 'detail') {
+
+            //intervalle montant a ajouter
+            $montant_ajouter = 0;
+            if ($request['prix_vendeur'] <= 5000) {
+                $montant_ajouter += 500;
+            } elseif ($request['prix_vendeur'] == 6000 || $request['prix_vendeur'] <= 15000) {
+                $montant_ajouter += 1500;
+            } else {
+                $montant_ajouter += 2000;
+            }
+
+            //prix_afficher
+            $prix_afficher = $request['prix_vendeur'] + $montant_ajouter;
+
+            //add info in table
+            Price::create([
+                'produit_id' => $produit['id'],
+                'q_min' => 1,
+                'q_max' => 1,
+                'prix_vendeur' => $request['prix_vendeur'],
+                'montant_ajouter' => $montant_ajouter,
+                'prix_afficher' =>  $prix_afficher
+            ]);
+        }
+
+
+        //if type_produit ==gros
+        if ($request['type'] == 'gros') {
+            foreach ($request['gros'] as $value) {
+
+                //intervalle montant a ajouter
+                $montant_ajouter = 0;
+                if ($value['prix_vendeur'] <= 5000) {
+                    $montant_ajouter += 500;
+                } elseif ($value['prix_vendeur'] == 6000 || $value['prix_vendeur'] <= 15000) {
+                    $montant_ajouter += 1500;
+                } else {
+                    $montant_ajouter += 2000;
+                }
+
+                //prix_afficher
+                $prix_afficher = $value['prix_vendeur'] + $montant_ajouter;
+
+
+                //add info in table
+
+                Price::create([
                     'produit_id' => $produit['id'],
-                    'nombre' => $value['nombre'],
-                    'prix' => $value['prix']
+                    'q_min' => $value['q_min'],
+                    'q_max' => $value['q_max'],
+                    'prix_vendeur' => $value['prix_vendeur'],
+                    'montant_ajouter' => $montant_ajouter,
+                    'prix_afficher' =>  $prix_afficher
                 ]);
             }
         }
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
             ->whereId($produit['id'])
             ->get();
 

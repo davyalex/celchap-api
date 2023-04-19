@@ -14,7 +14,7 @@ class SiteController extends Controller
     {
         $filter = request('produit');
         
-        $produit = Produit::with(['categorie', 'sous_categorie', 'grossistes', 'avis', 'media'])
+        $produit = Produit::with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
         ->when($filter =='produit_jour',function($q){
             return $q->whereDay('created_at', Carbon::now()->day);
         })

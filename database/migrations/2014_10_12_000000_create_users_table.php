@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('indicatif')->nullable();
             $table->string('phone')->nullable();
             $table->string('phone_status')->nullable();
-            $table->string('email')->nullable();
+            // $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
