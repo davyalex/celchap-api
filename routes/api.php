@@ -79,22 +79,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
         route::post('detail', 'detail');
         route::post('destroy', 'destroy');
     });
-
-
-
-
-    //api du site
-
-    /**SITE */
-    Route::controller(SiteController::class)->prefix('site')->group(function () {
-        route::get('produit', 'produit');
-    });
-
-
-
-
-    //api sans middleware
-
-    //liste des categories
-    Route::get('categorie/index',[CategorieController::class,'index']);
 });
+
+
+
+//api sans middleware
+
+//api du site
+
+/**SITE */
+Route::controller(SiteController::class)->prefix('site')->group(function () {
+    route::get('produit', 'produit');
+    route::get('liste-boutique', 'boutiqueAll');
+
+});
+
+
+
+//liste des categories
+Route::get('categorie/index', [CategorieController::class, 'index']);

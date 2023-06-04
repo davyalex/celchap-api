@@ -93,16 +93,16 @@ class UserController extends Controller
         $auth = User::with([
             'commandes',
             'boutiques' => function ($q) {
-                $q->with(['categorie','commandes'])
-                ->whereId(Auth::user()->boutique_id);
+                $q->with(['categorie', 'commandes'])
+                    ->whereId(Auth::user()->boutique_id);
             }
         ])
             ->whereId(Auth::user()->id)
             ->get();
 
-            return response()->json([
-                'auth'=>$auth
-            ]);
+        return response()->json([
+            'auth' => $auth
+        ]);
     }
 
 

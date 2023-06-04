@@ -20,6 +20,8 @@ return new class extends Migration
             $table->double('tarif_livraison')->nullable();
             $table->double('montant_total')->nullable();
             $table->string('status')->nullable(); // attente", en cour ,livré
+            $table->string('disponibilite')->nullable(); //disponible, pas disponibe
+
            
             // $table->double('remise')->nullable();
             // $table->dateTime('livraison_prevue')->nullable();

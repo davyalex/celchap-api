@@ -17,7 +17,7 @@ class SousCategorieController extends Controller
     public function index()
     {
         //
-        $sous_categorie = SousCategorie::with('media')->get();
+        $sous_categorie = SousCategorie::with(['media','categorie'])->get();
         return response()->json(['sous_categorie' => $sous_categorie], 200);
     }
 

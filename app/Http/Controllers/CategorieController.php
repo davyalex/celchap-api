@@ -17,7 +17,7 @@ class CategorieController extends Controller
     public function index()
     {
         //
-        $categorie = Categorie::with('media')->get();
+        $categorie = Categorie::with(['media','sous_categories'])->get();
         return response()->json(['categorie' => $categorie], 200);
     }
 

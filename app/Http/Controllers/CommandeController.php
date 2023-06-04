@@ -7,6 +7,7 @@ use App\Models\Commande;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreCommandeRequest;
 use App\Http\Requests\UpdateCommandeRequest;
 
@@ -60,7 +61,7 @@ class CommandeController extends Controller
             'phone' => $getClient['phone'],
             'email' => $getClient['email'],
             'localisation' => $getClient['localisation'],
-            'password' => $getClient['phone'],
+            'password' =>Hash::make( $getClient['password']),
         ]);
 
            //assign-role
@@ -70,13 +71,14 @@ class CommandeController extends Controller
         $getCommande = $request['commande'];
         $code = Str::random(10);
         $commande = Commande::firstOrCreate([
-            'code' => $code,
+            'code' =>'cm-'.$code,
             'nombre_produit' => $getCommande['nombre_produit'],
             'sous_total' => $getCommande['sous_total'],
             'livraison_id' => $getCommande['livraison_id'],
             'montant_total' => $getCommande['montant_total'],
             'status' => 'attente',
             'user_id' => $client['id'],
+            'boutique_id' => Auth::user()->boutique_id,
         ]);
 
         //insertion des produits dans le pivot commande_produit

@@ -41,7 +41,7 @@ class Categorie extends Model implements HasMedia
 
     public function sous_categories(): HasMany
     {
-        return $this->hasMany(SousCategorie::class);
+        return $this->hasMany(SousCategorie::class,'category_id');
     }
 
 
