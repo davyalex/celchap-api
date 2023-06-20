@@ -58,6 +58,11 @@ class Produit extends Model implements HasMedia
         return $this->belongsTo(Categorie::class, 'category_id');
     }
 
+    public function boutique(): BelongsTo
+    {
+        return $this->belongsTo(Boutique::class, 'boutique_id');
+    }
+
    public function sous_categorie(): BelongsTo
     {
         return $this->belongsTo(SousCategorie::class, 'sous_category_id');
@@ -78,12 +83,35 @@ class Produit extends Model implements HasMedia
         return $this->hasMany(Price::class);
     }
 
-  public function commandes(): BelongsToMany
+    public function tailles(): HasMany
     {
-        return $this->belongsToMany(Commande::class, 'commande_produit','produit_id', 'commande_id')
-        ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total','boutique_id')
-        ->withTimestamps();
-        
+        return $this->hasMany(Taille::class);
     }
+    
+    public function pointures(): HasMany
+    {
+        return $this->hasMany(Pointure::class);
+    }
+
+    public function couleurs(): HasMany
+    {
+        return $this->hasMany(Couleur::class);
+    }
+
+    public function commandes(): HasMany
+    {
+        return $this->hasMany(Commande::class);
+    }
+
+
+
+
+//   public function commandes(): BelongsToMany
+//     {
+//         return $this->belongsToMany(Commande::class, 'commande_produit','produit_id', 'commande_id')
+//         ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total','boutique_id')
+//         ->withTimestamps();
+        
+//     }
 
 }

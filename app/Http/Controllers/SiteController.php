@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Produit;
 use App\Models\Boutique;
+use App\Models\Livraison;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,7 @@ class SiteController extends Controller
 
 
 
-        $produit = Produit::with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
+        $produit = Produit::with(['categorie', 'sous_categorie', 'pointures' , 'tailles', 'couleurs', 'prices', 'avis', 'media'])
             ->when($filter == 'produit_jour', function ($q) {
                 return $q->whereDay('created_at', Carbon::now()->day);
             })
@@ -48,10 +49,34 @@ class SiteController extends Controller
     //liste de toute les boutiques
     public function boutiqueAll()
     {
-        $boutique = Boutique::with(['media', 'categorie', 'produits', 'commandes'])
+        $boutique = Boutique::with(['media', 'categorie', 'produits', 'commandes', 'user'])
             ->orderBy('name')->get();
         return response()->json([
             'boutique' => $boutique,
+        ], 200);
+    }
+
+    //detail de la boutique selectionnée
+    public function detailBoutique()
+    {
+        $boutiqueId = request('id');
+        $boutique = Boutique::with([
+            'media', 'categorie', 'commandes', 'user', 'produits'
+            => fn ($q) => $q->with(['media', 'tailles','pointures' , 'couleurs', 'categorie']),
+        ])->whereCode($boutiqueId)->first();
+
+
+        return response()->json([
+            'boutique' => $boutique,
+        ], 200);
+    }
+
+    public function livraisonAll()
+    {
+        $livraison = Livraison::get();
+           
+        return response()->json([
+            'livraison' => $livraison,
         ], 200);
     }
 }

@@ -23,7 +23,7 @@ class BoutiqueController extends Controller
 
 
         $boutique = Boutique::where('user_id', Auth::user()->id)
-        ->with(['media','categorie','produits','commandes'])->get();
+        ->with(['media','categorie','produits','commandes','user'])->get();
         return response()->json([
             'boutique' => $boutique,
             ], 200);

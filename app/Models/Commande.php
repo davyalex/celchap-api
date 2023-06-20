@@ -16,11 +16,13 @@ class Commande extends Model
     protected $fillable = [
         'code',
         'description',
-        'nombre_produit',
+        // 'nombre_produit',
+        'quantite',
         'sous_total',
         'tarif_livraison',
         'montant_total',
         'status',
+        'produit_id',
         'user_id',
         'boutique_id',
         'livraison_id',
@@ -34,18 +36,23 @@ class Commande extends Model
         return $this->belongsTo(Livraison::class, 'livraison_id');
     }
 
+    public function produit(): BelongsTo
+    {
+        return $this->belongsTo(Produit::class, 'produit_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
 
-    public function produits(): BelongsToMany
-    {
-        return $this->belongsToMany(Produit::class, 'commande_produit','commande_id', 'produit_id')
-        ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total','boutique_id')
-        ->withTimestamps();
-    }
+    // public function produits(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Produit::class, 'commande_produit','commande_id', 'produit_id')
+    //     ->withPivot('quantite', 'prix_vendeur','montant_ajouter','prix_afficher','total','boutique_id')
+    //     ->withTimestamps();
+    // }
 
 
     public function boutiques(): BelongsToMany

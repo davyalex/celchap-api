@@ -9,7 +9,10 @@ use App\Http\Controllers\BoutiqueController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\GrossisteController;
+use App\Http\Controllers\LivraisonController;
 use App\Http\Controllers\SousCategorieController;
+use App\Http\Controllers\AdminController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,21 +39,6 @@ Route::controller(UserController::class)->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    /**CATEGORY PRINCIPALE */
-    Route::controller(CategorieController::class)->prefix('categorie')->group(function () {
-        // route::get('index', 'index');
-        route::post('store', 'store');
-        route::post('update', 'update');
-        route::post('destroy', 'destroy');
-    });
-
-    /**SOUS CATEGORY  */
-    Route::controller(SousCategorieController::class)->prefix('sous_categorie')->group(function () {
-        route::get('index', 'index');
-        route::post('store', 'store');
-        route::post('update', 'update');
-        route::post('destroy', 'destroy');
-    });
 
     /**BOUTIQUE */
     Route::controller(BoutiqueController::class)->prefix('boutique')->group(function () {
@@ -65,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(ProduitController::class)->prefix('produit')->group(function () {
         route::get('index', 'index');
         route::post('store', 'store');
-        route::post('detail', 'detail');
+        route::get('detail', 'detail');
         route::post('update', 'update');
         route::post('destroy', 'destroy');
         route::post('deleteImage', 'deleteImage');
@@ -76,7 +64,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(CommandeController::class)->prefix('commande')->group(function () {
         route::get('index', 'index');
         route::post('store', 'store');
-        route::post('detail', 'detail');
+        route::get('detail', 'detail');
+        route::get('client', 'commande_user');
         route::post('destroy', 'destroy');
     });
 });
@@ -91,10 +80,52 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::controller(SiteController::class)->prefix('site')->group(function () {
     route::get('produit', 'produit');
     route::get('liste-boutique', 'boutiqueAll');
-
+    route::get('boutique', 'detailBoutique');
+    route::get('liste-livraison', 'livraisonAll');
 });
 
 
 
 //liste des categories
 Route::get('categorie/index', [CategorieController::class, 'index']);
+
+
+
+
+
+//api admin
+
+Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+    /**CATEGORY PRINCIPALE */
+    Route::controller(CategorieController::class)->prefix('categorie')->group(function () {
+        route::get('index', 'index');
+        route::post('store', 'store');
+        route::post('update', 'update');
+        route::post('destroy', 'destroy');
+    });
+
+    /**SOUS CATEGORY  */
+    Route::controller(SousCategorieController::class)->prefix('sous_categorie')->group(function () {
+        route::get('index', 'index');
+        route::post('store', 'store');
+        route::post('update', 'update');
+        route::post('destroy', 'destroy');
+    });
+
+
+    /**LIVRAISON  */
+    Route::controller(LivraisonController::class)->prefix('livraison')->group(function () {
+        route::get('index', 'index');
+        route::post('store', 'store');
+        route::post('update', 'update');
+        route::post('destroy', 'destroy');
+    });
+
+
+    /**ADMIN  */
+    Route::controller(AdminController::class)->group(function () {
+        route::get('liste-boutique', 'boutique');
+        route::get('user', 'user'); //envoi de parametre query "role"
+       
+    });
+});

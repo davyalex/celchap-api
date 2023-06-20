@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique()->nullable();
             $table->string('description')->nullable();
-            $table->integer('nombre_produit')->nullable();
+            $table->integer('quantite')->nullable();
             $table->double('sous_total')->nullable();
             $table->double('tarif_livraison')->nullable();
             $table->double('montant_total')->nullable();
@@ -36,6 +36,13 @@ return new class extends Migration
             $table->foreignId('boutique_id')
             ->nullable()
             ->constrained('boutiques')
+            ->onUpdate('cascade')
+            ->onDelete('set null');
+
+            
+            $table->foreignId('produit_id')
+            ->nullable()
+            ->constrained('produits')
             ->onUpdate('cascade')
             ->onDelete('set null');
 

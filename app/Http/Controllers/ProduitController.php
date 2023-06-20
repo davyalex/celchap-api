@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Price;
+use App\Models\Couleur;
 use App\Models\Produit;
+use App\Models\Commande;
 use App\Models\Grossiste;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -28,7 +30,7 @@ class ProduitController extends Controller
 
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
+            ->with(['categorie', 'boutique', 'sous_categorie', 'tailles', 'couleurs','pointures' ,'prices', 'avis', 'media'])
             ->when(
                 $name,
                 fn ($q) => $q->whereName($name)
@@ -87,6 +89,9 @@ class ProduitController extends Controller
             'boutique_id' => Auth::user()->boutique_id,
         ]);
 
+
+
+
         if ($produit) {
             if ($request->file('image')) {
                 foreach ($request->file('image') as $image) {
@@ -94,6 +99,31 @@ class ProduitController extends Controller
                         ->toMediaCollection('image');
                 }
             }
+
+            //add couleur 
+            foreach ($request['couleur'] as $value) {
+                Couleur::create([
+                    'name' => $value['name'],
+                    'produit_id' => $produit['id'],
+                ]);
+            }
+
+
+            //add taille 
+            foreach ($request['taille'] as $value) {
+                Couleur::create([
+                    'name' => $value['name'],
+                    'produit_id' => $produit['id'],
+                ]);
+            }
+
+                //add pointure 
+                foreach ($request['pointure'] as $value) {
+                    Couleur::create([
+                        'name' => $value['name'],
+                        'produit_id' => $produit['id'],
+                    ]);
+                }
 
             /**
              * type: detail ou gros
@@ -161,7 +191,7 @@ class ProduitController extends Controller
         }
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
+            ->with(['categorie', 'sous_categorie', 'tailles', 'couleurs', 'boutique', 'pointures' ,'prices', 'avis', 'media'])
             ->whereId($produit['id'])
             ->get();
 
@@ -176,11 +206,22 @@ class ProduitController extends Controller
     {
 
         //recuperer les detail d'un produit
+        $produitId = request('id');
+        $produit  = Produit::whereCode($produitId)
+            ->with([
+                'categorie', 'sous_categorie', 'tailles','pointures' , 'couleurs', 'boutique'=> fn ($q) => $q->with('media'), 'prices', 'avis', 'media'
+            ])->first();
+        //nombre de commande du produit
+        $nb_cmd = Commande::whereHas(
+            'produits',
+            fn ($q) => $q->where('produit_id', $produit['id'])
+        )->count();
 
-        $produit  = Produit::whereId($request['id'])
-            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])->get();
 
-        return response()->json(['produit' => $produit], 200);
+
+        return response()->json([
+            'produit' => $produit, 'nb_cmd' => $nb_cmd
+        ], 200);
     }
 
 
@@ -221,6 +262,31 @@ class ProduitController extends Controller
                     ->toMediaCollection('image');
             }
         }
+
+             //add couleur 
+             foreach ($request['couleur'] as $value) {
+                Couleur::create([
+                    'name' => $value['name'],
+                    'produit_id' => $produit['id'],
+                ]);
+            }
+
+
+            //add taille 
+            foreach ($request['taille'] as $value) {
+                Couleur::create([
+                    'name' => $value['name'],
+                    'produit_id' => $produit['id'],
+                ]);
+            }
+
+                //add pointure 
+                foreach ($request['pointure'] as $value) {
+                    Couleur::create([
+                        'name' => $value['name'],
+                        'produit_id' => $produit['id'],
+                    ]);
+                }
 
         /**
          * type: detail ou gros
@@ -287,7 +353,7 @@ class ProduitController extends Controller
         }
 
         $produit = Produit::where('boutique_id', Auth::user()->boutique_id)
-            ->with(['categorie', 'sous_categorie', 'prices', 'avis', 'media'])
+            ->with(['categorie', 'sous_categorie', 'tailles', 'pointures' , 'couleurs', 'prices', 'avis', 'media'])
             ->whereId($produit['id'])
             ->get();
 
