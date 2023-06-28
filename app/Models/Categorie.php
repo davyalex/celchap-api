@@ -47,7 +47,7 @@ class Categorie extends Model implements HasMedia
 
     public function produits(): HasMany
     {
-        return $this->hasMany(Produit::class);
+        return $this->hasMany(Produit::class,'category_id');
     }
 
 

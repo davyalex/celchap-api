@@ -53,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(ProduitController::class)->prefix('produit')->group(function () {
         route::get('index', 'index');
         route::post('store', 'store');
-        route::get('detail', 'detail');
+        // route::get('detail', 'detail');
         route::post('update', 'update');
         route::post('destroy', 'destroy');
         route::post('deleteImage', 'deleteImage');
@@ -88,6 +88,9 @@ Route::controller(SiteController::class)->prefix('site')->group(function () {
 
 //liste des categories
 Route::get('categorie/index', [CategorieController::class, 'index']);
+//detail produit
+Route::get('produit/detail', [ProduitController::class, 'detail']);
+
 
 
 

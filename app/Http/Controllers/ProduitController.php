@@ -213,7 +213,7 @@ class ProduitController extends Controller
             ])->first();
         //nombre de commande du produit
         $nb_cmd = Commande::whereHas(
-            'produits',
+            'produit',
             fn ($q) => $q->where('produit_id', $produit['id'])
         )->count();
 

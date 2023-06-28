@@ -78,6 +78,17 @@ class UserController extends Controller
             $user = User::with(['roles', 'media'])->wherePhone($request['phone'])->first();
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            $user = User::with([
+                'roles', 'media', 'commandes',
+                'boutiques' => function ($q) {
+                    $q->with(['categorie', 'commandes'])
+                        ->whereId(Auth::user()->boutique_id);
+                }
+            ])->whereId($user->id)
+                ->get();
+
+
+
             return response()->json([
                 'user' => $user,
                 'access_token' => $token,

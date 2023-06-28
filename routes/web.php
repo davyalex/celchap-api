@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\CategorieController;
+use App\Http\Controllers\admin\LivraisonController;
+use App\Http\Controllers\admin\SousCategorieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +17,46 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    });
+
+       /**CATEGORY PRINCIPALE */
+       Route::controller(CategorieController::class)->prefix('categorie')->group(function () {
+        route::get('index', 'index')->name('admin.categorie.index');
+        route::get('create', 'create')->name('admin.categorie.create');
+        route::post('store', 'store')->name('admin.categorie.store');
+        route::post('update/{id}', 'update')->name('admin.categorie.update');
+        route::get('destroy/{id}', 'destroy')->name('admin.categorie.destroy');
+    });
+
+    
+    /**SOUS CATEGORY  */
+    Route::controller(SousCategorieController::class)->prefix('sous-categorie')->group(function () {
+        route::get('index', 'index')->name('admin.sous_categorie.index');
+        route::get('create', 'create')->name('admin.sous_categorie.create');
+        route::post('store', 'store')->name('admin.sous_categorie.store');
+        route::post('update/{id}', 'update')->name('admin.sous_categorie.update');
+        route::get('destroy/{id}', 'destroy')->name('admin.sous_categorie.destroy');
+    });
+
+       /**LIVRAISON  */
+       Route::controller(LivraisonController::class)->prefix('livraison')->group(function () {
+        route::get('index', 'index')->name('admin.livraison.index');
+        route::post('store', 'store')->name('admin.livraison.store');
+        route::post('update/{id}', 'update')->name('admin.livraison.update');
+        route::post('destroy/{id}', 'destroy')->name('admin.livraison.destroy');
+    });
+
+
+      /**UTILISATEURS  */
+      Route::controller(UserController::class)->prefix('utilisateur')->group(function () {
+        route::get('fournisseur', 'fournisseur')->name('admin.fournisseur');
+        // route::post('store', 'store')->name('admin.livraison.store');
+        // route::post('update/{id}', 'update')->name('admin.livraison.update');
+        // route::post('destroy/{id}', 'destroy')->name('admin.livraison.destroy');
+    });
 });
