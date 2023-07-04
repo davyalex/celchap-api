@@ -1,8 +1,10 @@
 @extends('admin.layout.app')
-@section('title','Fournisseur')
+
+@section('title','Boutique')
 
 @section('content')
 <div class="content">
+   
     <div class="row">
         <div class="col-12">
             <div class="ec-vendor-list card card-default">
@@ -12,35 +14,31 @@
                             <thead>
                                 <tr>
                                     <th>Profile</th>
-                                    <th>Name</th>
+                                    <th>Nom</th>
                                     <th>Contact</th>
-
-                                    {{-- <th>Email</th> --}}
-                                    {{-- <th>Product</th> --}}
-                                    {{-- <th>Total Sell</th> --}}
-                                    <th>Status</th>
-                                    <th>Nombre de boutique</th>
+                                    <th>Categorie</th>
+                                    <th>Nombre de vente</th>
                                     <th>Inscrit le</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                @foreach ($fournisseur as $item)
+                                @foreach ($boutique as $item)
                                     
                                 <tr>
                                     <td><img class="vendor-thumb" src="{{ asset('admin/assets/img/vendor/u1.jpg') }}" alt="vendor image" /></td>
-                                    <td>{{ $item['fullname'] }}</td>
+                                    <td>{{ $item['name'] }}</td>
                                     <td>+{{ $item['indicatif'] }} {{ $item['phone'] }}</td>
                                     {{-- <td>marleerena@gmail.com</td> --}}
                                     {{-- <td>28</td>
                                     <td>2161</td> --}}
-                                    <td>ACTIVE</td>
-                                    <td>{{ $item['boutiques']->count() }}</td>
+                                    <td>{{ $item['categorie'] ? $item['categorie']['name'] : '' }}</td>
+                                    <td>{{ $item['commandes']->count() }}</td>
                                     <td>{{ $item['created_at'] }}</td>
                                     <td>
                                         <div class="btn-group">
-                                            <a role="button" href="{{ route('admin.detail_fournisseur',$item['id']) }}" 
+                                            <a href="{{ route('admin.boutique_detail',$item['id']) }}" role="button"
                                                 class="btn btn-outline-success">Info</a>
                                             <button type="button"
                                                 class="btn btn-outline-success dropdown-toggle dropdown-toggle-split"

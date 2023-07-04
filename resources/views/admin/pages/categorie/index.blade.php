@@ -1,13 +1,9 @@
 @extends('admin.layout.app')
 
+@section('title','Categorie')
+
 @section('content')
     <div class="content">
-        <div class="breadcrumb-wrapper breadcrumb-wrapper-2 breadcrumb-contacts">
-            <h1>Catégories-Sous catégories</h1>
-            <p class="breadcrumbs"><span><a href="index.html">Home</a></span>
-                <span><i class="mdi mdi-chevron-right"></i></span>Main Category
-            </p>
-        </div>
         <div class="row">
             {{-- categorie --}}
             <div class="col-xl-5 col-lg-12">

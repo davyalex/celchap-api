@@ -50,5 +50,10 @@ class Categorie extends Model implements HasMedia
         return $this->hasMany(Produit::class,'category_id');
     }
 
+    public function boutiques(): HasMany
+    {
+        return $this->hasMany(Boutique::class,'category_id');
+    }
+
 
 }
